@@ -1,36 +1,28 @@
-import requests
 
 import pandas as pd
-from bs4 import BeautifulSoup
+import requests
+from bs4 import BeautifulSoup 
 
-response = requests.get("https://www.bbc.com/")
+response = requests.get("http://www.rj.gov.br/Agenda.aspx")
+
 doc = BeautifulSoup(response.text, 'html.parser')
 
-stories = doc.select('.media-list__item')
+itens = doc.select('.noticias-wrap .noticia-3col')
 
 rows = []
 
-for story in stories:
+for item in itens[:100]:
     row = {}
-
-    row['title'] = story.select_one('h3').text.strip()
-
-    try:
-        row['href'] = story.select_one('.media__link, .reel__link')['href']
-    except:
-        pass
-
-    try:
-        row['tag'] = story.select_one('.media__tag').text.strip()
-    except:
-        pass
-
-    try:
-        row['summary'] = story.select_one('.media__summary').text.strip()
-    except:
-        pass
-
+    row['dia'] = item.select('h1')[0].text
+    text = ''
+    description = item.findAll('p')
+    for element in description:
+        text += ''.join(element.findAll(text = True))
+    row['descricao'] = text
     rows.append(row)
 
 df = pd.DataFrame(rows)
-df.to_csv("bbc-headlines.csv", index=False)
+
+df.to_csv('agenda.csv')
+
+
