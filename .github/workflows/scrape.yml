@@ -28,7 +28,6 @@ jobs:
           git add -A
           timestamp=$(date -u)
           git commit -m "Latest data: ${timestamp}" &&
-            export COMMIT_HASH=$(git rev-parse HEAD) &&
-            python send_mail.py ||
+            export COMMIT_HASH=$(git rev-parse HEAD) ||
             exit 0
           git push
